@@ -15,15 +15,15 @@ width, height = 16, 8
 
 fig_x = plt.figure(figsize=(width, height))
 gs_x = GridSpec(2, 10)
-fig_x.suptitle("x")
+fig_x.suptitle("xz")
 
 fig_y = plt.figure(figsize=(width, height))
 gs_y = GridSpec(2, 10)
-fig_y.suptitle("y")
+fig_y.suptitle("xy")
 
 fig_z = plt.figure(figsize=(width, height))
 gs_z = GridSpec(2, 10)
-fig_z.suptitle("z")
+fig_z.suptitle("yz")
 
 # range_ = [i for i in range(1, 44 + 1) if i != 17]
 
@@ -44,12 +44,16 @@ for i, p_ in enumerate(range(1, 20 + 1)):
 
     congruency = pd.read_csv(path_results, usecols=['trial_num', 'congruency'], index_col=0)
     accuracy = pd.read_csv(path_results, usecols=['trial_num', 'accuracy'], index_col=0)
+    fin_pos_x = pd.read_csv(path_results, usecols=['trial_num', 'fin_pos_x'], index_col=0)
+    # print(fin_pos_x)
 
     # Congruent Trials
-    x_ct, y_ct, z_ct = [], [], []
+    x_ctl, y_ctl, z_ctl = [], [], []
+    x_ctr, y_ctr, z_ctr = [], [], []
 
     # Incongruent Trials
-    x_it, y_it, z_it = [], [], []
+    x_itl, y_itl, z_itl = [], [], []
+    x_itr, y_itr, z_itr = [], [], []
 
     ax_x = fig_x.add_subplot(gs_x[i])
     ax_x.grid(True)
@@ -125,33 +129,77 @@ for i, p_ in enumerate(range(1, 20 + 1)):
         if accuracy.loc[trial_number, 'accuracy'] == 1:
 
             if congruency.loc[trial_number, 'congruency']:
-                x_ct.extend([x_to])
-                y_ct.extend([y_to])
-                z_ct.extend([z_to])
-            else:
-                x_it.extend([x_to])
-                y_it.extend([y_to])
-                z_it.extend([z_to])
 
-    x_ct, y_ct, z_ct = np.array(x_ct), np.array(y_ct), np.array(z_ct)
-    x_it, y_it, z_it = np.array(x_it), np.array(y_it), np.array(z_it)
+                # LEFT
+                if fin_pos_x.loc[trial_number, 'fin_pos_x'] < 0:
+                    x_ctl.extend([x_to])
+                    y_ctl.extend([y_to])
+                    z_ctl.extend([z_to])
+                # RIGHT
+                else:
+                    x_ctr.extend([x_to])
+                    y_ctr.extend([y_to])
+                    z_ctr.extend([z_to])
+            else:
+
+                # LEFT
+                if fin_pos_x.loc[trial_number, 'fin_pos_x'] < 0:
+                    x_itl.extend([x_to])
+                    y_itl.extend([y_to])
+                    z_itl.extend([z_to])
+                # RIGHT
+                else:
+                    x_itr.extend([x_to])
+                    y_itr.extend([y_to])
+                    z_itr.extend([z_to])
+
+    x_ctl, y_ctl, z_ctl = np.array(x_ctl), np.array(y_ctl), np.array(z_ctl)
+    x_itl, y_itl, z_itl = np.array(x_itl), np.array(y_itl), np.array(z_itl)
+
+    x_ctr, y_ctr, z_ctr = np.array(x_ctr), np.array(y_ctr), np.array(z_ctr)
+    x_itr, y_itr, z_itr = np.array(x_itr), np.array(y_itr), np.array(z_itr)
 
     a_ = 0.5
 
-    ax_x.hist(x_ct, color='blue', density=True, alpha=a_)
-    ax_y.hist(y_ct, color='blue', density=True, alpha=a_)
-    ax_z.hist(z_ct, color='blue', density=True, alpha=a_)
+    # ax_x.hist(x_ctl, color='blue', density=True, alpha=a_)
+    # ax_y.hist(y_ctl, color='blue', density=True, alpha=a_)
+    # ax_z.hist(z_ctl, color='blue', density=True, alpha=a_)
+    #
+    # ax_x.hist(x_itl, color='orange', density=True, alpha=a_)
+    # ax_y.hist(y_itl, color='orange', density=True, alpha=a_)
+    # ax_z.hist(z_itl, color='orange', density=True, alpha=a_)
+    #
+    # ax_x.hist(x_ctr, color='green', density=True, alpha=a_)
+    # ax_y.hist(y_ctr, color='green', density=True, alpha=a_)
+    # ax_z.hist(z_ctr, color='green', density=True, alpha=a_)
+    #
+    # ax_x.hist(x_itr, color='magenta', density=True, alpha=a_)
+    # ax_y.hist(y_itr, color='magenta', density=True, alpha=a_)
+    # ax_z.hist(z_itr, color='magenta', density=True, alpha=a_)
 
-    ax_x.hist(x_it, color='orange', density=True, alpha=a_)
-    ax_y.hist(y_it, color='orange', density=True, alpha=a_)
-    ax_z.hist(z_it, color='orange', density=True, alpha=a_)
+    ax_x.plot(x_ctl, z_ctl, '.', color='blue', alpha=a_, label='CL')
+    ax_x.plot(x_itl, z_itl, '.', color='orange', alpha=a_, label='IL')
+    ax_x.plot(x_ctr, z_ctr, '.', color='green', alpha=a_, label='CR')
+    ax_x.plot(x_itr, z_itr, '.', color='magenta', alpha=a_, label='IR')
+    ax_x.legend()
 
+    ax_y.plot(x_ctl, y_ctl, '.', color='blue', alpha=a_, label='CL')
+    ax_y.plot(x_itl, y_itl, '.', color='orange', alpha=a_, label='IL')
+    ax_y.plot(x_ctr, y_ctr, '.', color='green', alpha=a_, label='CR')
+    ax_y.plot(x_itr, y_itr, '.', color='magenta', alpha=a_, label='IR')
+    ax_y.legend()
+
+    ax_z.plot(y_ctl, z_ctl, '.', color='blue', alpha=a_, label='CL')
+    ax_z.plot(y_itl, z_itl, '.', color='orange', alpha=a_, label='IL')
+    ax_z.plot(y_ctr, z_ctr, '.', color='green', alpha=a_, label='CR')
+    ax_z.plot(y_itr, z_itr, '.', color='magenta', alpha=a_, label='IR')
+    ax_z.legend()
 
 fig_x.tight_layout()
 fig_y.tight_layout()
 fig_z.tight_layout()
 
-fig_x.savefig("vr_s1_x.png")
-fig_y.savefig("vr_s1_y.png")
-fig_z.savefig("vr_s1.z.png")
-# plt.show()
+fig_x.savefig("vr_s1_xz.png")
+fig_y.savefig("vr_s1_xy.png")
+fig_z.savefig("vr_s1.yz.png")
+plt.show()
